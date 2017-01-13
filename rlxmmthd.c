@@ -1,3 +1,18 @@
+/*
+	Relaxacion method for temperature interpolation
+
+		Vivas,A;Arango,C;Arguelles,A; 
+		Lascilab
+		CIBioFi-QuanTIC
+		  
+		Last updated: June 28, 2016
+
+	This program is in development. 
+
+	Laboratory of Distributed systems and Networks
+	https://http://Lascilab.univalle.edu.co/
+
+*/
 #include <stdlib.h>	/* Standard Libary: malloc, calloc, free, ralloc functions */
 #include <stdio.h> 	/* Standard I/O Library: printf */
 
