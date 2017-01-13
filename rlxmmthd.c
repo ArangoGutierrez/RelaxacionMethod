@@ -34,7 +34,7 @@ void show(int * matrix, int dx, int dy){
 	for (i = 1; i <= dx * dy; ++i)
 	{
 		printf("%d ", matrix[i-1]);
-		if(i % dy == 0) printf("\n");
+		if(i % dx == 0) printf("\n");
 	}
 }
 
