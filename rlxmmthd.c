@@ -23,41 +23,68 @@ struct Station
 	double t;	/* temperature */
 };
 
-void fillB(int * matrix, int nx, int ny){
+void fillB(int * matrix, int nx, int ny, struct Station *s, int ne){
 	int i = 0, row = 0, col = 0;
 	for (i = 0; i < nx * ny; i++){
-		row = i / nx;
-		col = i % nx;
+		row = i / nx, col = i % nx;
 		matrix[i] = ( row == 0 || col == 0  || row == ny - 1 || col == nx - 1) ? 0 : 1;
 	}
-		
 
+	int s_i = 0, s_j = 0;
+	for (i = 0; i < ne; ++i){
+		s_i = s[i].x * nx, s_j = s[i].y;
+		matrix[ s_i + s_j ] = 2;
+	}
 }
 
-void fillT(double * matrix, int dx, int dy, struct Station *s, int ne){
-	int sum = 0;
+void fillT(double * matrix, int nx, int ny,struct Station *s, int ne){
+	double sum = 0;
 	int i;
-	for (i = 0; i < ne; i++) {sum = sum + s[i].t;};
+	for (i = 0; i < ne; i++) sum = sum + s[i].t;
 	double To =  ( sum / ne );
 	
-	for (i=0; i < dx * dy; i++) {matrix[i] = To;};
-	for (i=0; i < ne ; i++) {matrix[( s[i].x * s[i].y) ] = s[i].t;};
-	printf("To=%f\nS[0]=%f\nS[1]=%f\nS[2]=%f\nS[3]=%f\n",To,s[0],s[1],s[2],s[3]);
+	for (i=0; i < nx * ny; i++) matrix[i] = To;
+
+	int s_i = 0, s_j = 0;
+	for (i=0; i < ne ; i++) {
+		s_i = s[i].x * nx;
+		s_j = s[i].y;
+		matrix[( s_i + s_j ) ] = s[i].t;
+	}
 }
 
-void prnt(double * matrix, int dx, int dy){
+void prntB(int * matrix, int nx, int ny){
 	int i;
-	for (i = 1; i <= dx * dy; i++)
+	for (i = 1; i <= nx * ny; i++)
+	{
+		printf("%d\t", matrix[i-1]);
+		if(i % nx == 0) printf("\n");
+	}
+}
+
+void prntT(double * matrix, int nx, int ny){
+	int i;
+	for (i = 1; i <= nx * ny; i++)
 	{
 		printf("%f\t", matrix[i-1]);
-		if(i % dx == 0) printf("\n");
+		if(i % nx == 0) printf("\n");
 	}
+}
+
+void transitionFunc(int * B, double * T, int nx, int ny, int cell_pos){
+	int row = 0, col = 0;
+	row = cell_pos / nx, col = cell_pos % nx;
+	double up = ( row - 1 < 0 | B[ row - 1 ] == 0 ) ? 0 : T[row - 1];
+	double down = ( row + 1 >= ny | B[ row + 1 ] == 0 ) ? 0 : T[ row + 1 ];
+	double left = ( col - 1 < 0 | B[ col - 1 ] == 0 ) ? 0 : T[ col - 1 ];
+	double right = ( col + 1 >= nx | B[ col + 1 ] == 0) ? 0 : T[ col + 1];
 }
 
 int main(int argc, char const **argv)
 {
 	int Nx = 10;
 	int Ny = 10;
+	int Ne = 4;
 	
 	struct Station s[4];
 	//First Station
@@ -88,9 +115,15 @@ int main(int argc, char const **argv)
 	Ta = (double *) malloc(Nx * Ny * sizeof(double));
 	Tb = (double *) malloc(Nx * Ny * sizeof(double));
 
-	fillB(B,Nx,Ny);
-	fillT(Ta,Nx,Ny,s,4);
-	prnt(Ta,Nx,Ny);
+	fillB(B,Nx,Ny,s,Ne);
+	fillT(Ta,Nx,Ny,s,Ne);
+	fillT(Tb,Nx,Ny,s,Ne);
+	printf("B\n");
+	prntB(B,Nx,Ny);
+	printf("Ta\n");
+	prntT(Ta,Nx,Ny);
+	printf("Tb\n");
+	prntT(Tb,Nx,Ny);
 
 
 
