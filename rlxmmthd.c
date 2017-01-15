@@ -71,13 +71,18 @@ void prntT(double * matrix, int nx, int ny){
 	}
 }
 
-void transitionFunc(int * B, double * T, int nx, int ny, int cell_pos){
+double transitionFunc(int * B, double * T, int nx, int ny, int cell){
 	int row = 0, col = 0;
-	row = cell_pos / nx, col = cell_pos % nx;
-	double up = ( row - 1 < 0 | B[ row - 1 ] == 0 ) ? 0 : T[row - 1];
-	double down = ( row + 1 >= ny | B[ row + 1 ] == 0 ) ? 0 : T[ row + 1 ];
-	double left = ( col - 1 < 0 | B[ col - 1 ] == 0 ) ? 0 : T[ col - 1 ];
-	double right = ( col + 1 >= nx | B[ col + 1 ] == 0) ? 0 : T[ col + 1];
+	row = cell / nx, col = cell % nx;
+	double up = ( row - 1 < 0 | B[ cell - nx ] == 0 ) ? 0 : T[cell - nx];
+	double down = ( row + 1 >= ny | B[ cell + nx ] == 0 ) ? 0 : T[cell + nx];
+	double left = ( col - 1 < 0 | B[ cell - 1 ] == 0 ) ? 0 : T[ cell - 1 ];
+	double right = ( col + 1 >= nx | B[ cell + 1 ] == 0) ? 0 : T[ cell + 1];
+	double sum = ((up > 0) ? 1:0) + ((down > 0) ? 1:0) + ((left > 0) ? 1:0) + ((right > 0) ? 1:0);
+	double Tij = (up + down + left + right) / sum;
+	printf("Row %d, Col %d, up %f,down %f, left %f, right %f, sum %f, Tij %f\n",
+		row,col,up,down,left,right,sum,Tij);
+	return Tij;
 }
 
 int main(int argc, char const **argv)
@@ -124,9 +129,9 @@ int main(int argc, char const **argv)
 	prntT(Ta,Nx,Ny);
 	printf("Tb\n");
 	prntT(Tb,Nx,Ny);
-
-
-
+	printf("transitionFunc\n");
+	double result = transitionFunc(B,Ta,Nx,Ny,32);
+	
 	free(B);
 	free(Ta);
 	free(Tb);
