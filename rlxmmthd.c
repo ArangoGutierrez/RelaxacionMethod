@@ -15,6 +15,7 @@
 */
 #include <stdlib.h>	/* Standard Libary: malloc, calloc, free, ralloc functions */
 #include <stdio.h> 	/* Standard I/O Library: printf */
+#include <math.h>
 
 struct Station
 {
@@ -32,10 +33,7 @@ void fillB(int * matrix, int nx, int ny, struct Station *s, int ne){
 	}
 
 	int s_i = 0, s_j = 0;
-	for (i = 0; i < ne; ++i){
-		s_i = s[i].x * nx, s_j = s[i].y;
-		matrix[ s_i + s_j ] = 2;
-	}
+	for (i = 0; i < ne; ++i) matrix[ s[i].y * nx + s[i].y ] = 2;
 }
 
 void fillT(double * matrix, int nx, int ny,struct Station *s, int ne){
@@ -45,13 +43,7 @@ void fillT(double * matrix, int nx, int ny,struct Station *s, int ne){
 	double To =  ( sum / ne );
 	
 	for (i=0; i < nx * ny; i++) matrix[i] = To;
-
-	int s_i = 0, s_j = 0;
-	for (i=0; i < ne ; i++) {
-		s_i = s[i].x * nx;
-		s_j = s[i].y;
-		matrix[( s_i + s_j ) ] = s[i].t;
-	}
+	for (i=0; i < ne ; i++) matrix[( s[i].y * nx + s[i].x ) ] = s[i].t;
 }
 
 void prntB(int * matrix, int nx, int ny){
@@ -86,14 +78,15 @@ double transition(int * B, double * T, int nx, int ny, int cell){
 	return (B[cell] == 0 || B[cell] == 2) ? T[cell] : Tij;
 }
 
-int test(double * Ta, double * Tb, int nx, int ny){
+int test(int * B, double * Ta, double * Tb, int nx, int ny){
 	int i = 0;
 	double result = 0;
-	for (i = 0; i < nx * ny; ++i){
-		result = (1 / (nx*ny)) * (( (Tb[i] - Ta[i]) * (Tb[i] - Ta[i]) ) * 0.5);
-		if( result > 0.1 ) return 0;
-	}
-	return 1;
+	for (i = 0; i < nx * ny; ++i) result += (B[i] == 0 || B[i] == 2) ? 0 : pow(Tb[i] - Ta[i],2);
+	printf("Test Result delta: %.10f\n",result);
+	//result = (1 / (nx*ny)) * sqrt(result);
+	result =  sqrt(result);
+	printf("Test Result: %.10f\n",result);
+	return ( result <= 0.0000001 ) ? 1 : 0;
 }
 
 void evolve(int * B, double * Tin, double * Tout, int nx, int ny){
@@ -112,29 +105,29 @@ void printMatrixes(int * B, double * Ta, double * Tb, int nx, int ny){
 
 int main(int argc, char const **argv)
 {
-	int Nx = 10;
-	int Ny = 15;
+	int Nx = 100;
+	int Ny = 100;
 	int Ne = 4;
 	
 	struct Station s[4];
 	//First Station
-	s[0].x=2;
-	s[0].y=2;
+	s[0].x=25;
+	s[0].y=25;
 	s[0].t=26.5;
 
 	//Second Station
-	s[1].x=7;
-	s[1].y=2;
+	s[1].x=75;
+	s[1].y=25;
 	s[1].t=29.3;
 
 	//Third Station
-	s[2].x=2;
-	s[2].y=7;
+	s[2].x=25;
+	s[2].y=75;
 	s[2].t=28.7;
 
 	//Fourth Station
-	s[3].x=7;
-	s[3].y=7;
+	s[3].x=75;
+	s[3].y=75;
 	s[3].t=30.1;
 	
 	int * B = NULL;
@@ -150,12 +143,26 @@ int main(int argc, char const **argv)
 	fillT(Tb,Nx,Ny,s,Ne);
 	printMatrixes(B,Ta,Tb,Nx,Ny);
 
+	int i = 0;
+	for (i = 0; i < 20000; ++i)
+	{
+		printf("Generation %d\n",i+1);
+		evolve(B,Ta,Tb,Nx,Ny);
+		double * temp = Ta;
+		Ta = Tb;
+		Tb = temp;
+		printf("Test: %d\n",test(B,Ta,Tb,Nx,Ny));
+	}
+
+	printMatrixes(B,Ta,Tb,Nx,Ny);
+
+	/*
 	printf("Transition: %f\n",transition(B,Ta,Nx,Ny,32));
 
 	printf("Evolve\n");
 	
 	printf("Generation 0\n");
-	printf("Test: %d\n",test(Ta,Tb,Nx,Ny));
+	printf("Test: %d\n",test(B,Ta,Tb,Nx,Ny));
 	printMatrixes(B,Ta,Tb,Nx,Ny);
 	
 	printf("Generation 1\n");
@@ -163,7 +170,7 @@ int main(int argc, char const **argv)
 	double * temp = Ta;
 	Ta = Tb;
 	Tb = temp;
-	printf("Test: %d\n",test(Ta,Tb,Nx,Ny));
+	printf("Test: %d\n",test(B,Ta,Tb,Nx,Ny));
 	printMatrixes(B,Ta,Tb,Nx,Ny);
 
 	printf("Generation 2\n");
@@ -171,8 +178,9 @@ int main(int argc, char const **argv)
 	temp = Ta;
 	Ta = Tb;
 	Tb = temp;
-	printf("Test: %d\n",test(Ta,Tb,Nx,Ny));
+	printf("Test: %d\n",test(B,Ta,Tb,Nx,Ny));
 	printMatrixes(B,Ta,Tb,Nx,Ny);
+	*/
 
 	free(B);
 	free(Ta);
