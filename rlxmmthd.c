@@ -31,8 +31,6 @@ void fillB(int * matrix, int nx, int ny, struct Station *s, int ne){
 		row = i / nx, col = i % nx;
 		matrix[i] = ( row == 0 || col == 0  || row == ny - 1 || col == nx - 1) ? 0 : 1;
 	}
-
-	int s_i = 0, s_j = 0;
 	for (i = 0; i < ne; ++i) matrix[ s[i].y * nx + s[i].x ] = 2;
 }
 
@@ -173,9 +171,8 @@ int main(int argc, char const **argv)
 	fillT(Ta,Nx,Ny,s,Ne);
 	fillT(Tb,Nx,Ny,s,Ne);
 
-	//printMatrixes(B,Ta,Tb,Nx,Ny);
-
 	for (int i = 0 ; i < 10; i++) {
+
 
 	evolve(B,Ta,Tb,Nx,Ny);
 	
@@ -185,11 +182,12 @@ int main(int argc, char const **argv)
 	file=sprintf(FileName,"./OutputData/RlxMthd_v1.0_%d.dat",i);
 	file++;
   	dskw1=fopen(FileName,"w+");
-
-	for (int c = 1; c <= Nx * Ny; c++)
+	
+	for (int c = 0; c < Nx * Ny; c++)
 	{		
-		int b_i = 1 +  (c-1)/Nx, b_j = 1 + (c-1)%Nx; 
-		fprintf(dskw1,"%d\t%d\t%f\n",b_i,b_j,Tb[c-1]);
+	int x=( c % Nx ) + 1;
+	int y=( c / Nx ) + 1;
+	fprintf(dskw1,"%d\t%d\t%f\n",x,y,Tb[c]);
 	}
 
 	double * temp = Ta;
