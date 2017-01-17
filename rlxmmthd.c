@@ -5,12 +5,12 @@
 		Lascilab
 		CIBioFi-QuanTIC
 		  
-		Last updated: January 13, 2017
+		Last updated: January 17, 2017
 
 	This program is in development. 
 
 	Laboratory of Distributed systems and Networks
-	https://http://Lascilab.univalle.edu.co/
+	http://Lascilab.univalle.edu.co/
 
 */
 #include <stdlib.h>	/* Standard Libary: malloc, calloc, free, ralloc functions */
