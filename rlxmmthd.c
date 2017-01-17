@@ -15,7 +15,7 @@
 */
 #include <stdlib.h>	/* Standard Libary: malloc, calloc, free, ralloc functions */
 #include <stdio.h> 	/* Standard I/O Library: printf */
-#include <math.h>
+#include <math.h>	/* Standard Math Library */
 
 struct Station
 {
@@ -85,7 +85,7 @@ int test(int * B, double * Ta, double * Tb, int nx, int ny){
 	printf("Test Result delta: %.10f\n",result);
 	//result = (1 / (nx*ny)) * sqrt(result);
 	result =  sqrt(result);
-	printf("Test Result: %.10f\n",result);
+	//printf("Test Result: %.10f\n",result);
 	return ( result <= 0.0000001 ) ? 1 : 0;
 }
 
@@ -106,29 +106,59 @@ void printMatrixes(int * B, double * Ta, double * Tb, int nx, int ny){
 int main(int argc, char const **argv)
 {
 	int Nx = 100;
-	int Ny = 100;
-	int Ne = 4;
+	int Ny = 90;
+	int Ne = 10;
 	
-	struct Station s[4];
+	struct Station s[Ne];
 	//First Station
-	s[0].x=25;
-	s[0].y=25;
-	s[0].t=26.5;
+	s[0].x=65;
+	s[0].y=10;
+	s[0].t=22.6;
 
 	//Second Station
-	s[1].x=75;
-	s[1].y=25;
-	s[1].t=29.3;
+	s[1].x=55;
+	s[1].y=20;
+	s[1].t=23.2;
 
 	//Third Station
-	s[2].x=25;
-	s[2].y=75;
-	s[2].t=28.7;
+	s[2].x=50;
+	s[2].y=25;
+	s[2].t=22.7;
 
 	//Fourth Station
-	s[3].x=75;
-	s[3].y=75;
-	s[3].t=30.1;
+	s[3].x=50;
+	s[3].y=35;
+	s[3].t=22.9;
+
+	//Fith Station
+	s[4].x=40;
+	s[4].y=45;
+	s[4].t=22.0;
+
+	//Sixth Station
+	s[5].x=50;
+	s[5].y=60;
+	s[5].t=23.7;
+
+	//Seventh Station
+	s[6].x=35;
+	s[6].y=65;
+	s[6].t=23.1;
+
+	//Eighth Station
+	s[7].x=50;
+	s[7].y=70;
+	s[7].t=23.1;
+
+	//Ninth Station
+	s[8].x=35;
+	s[8].y=75;
+	s[8].t=22.9;
+
+	//Tenth Station
+	s[9].x=45;
+	s[9].y=80;
+	s[9].t=23.5;
 	
 	int * B = NULL;
 	double * Ta = NULL;
@@ -141,9 +171,35 @@ int main(int argc, char const **argv)
 	fillB(B,Nx,Ny,s,Ne);
 	fillT(Ta,Nx,Ny,s,Ne);
 	fillT(Tb,Nx,Ny,s,Ne);
-	printMatrixes(B,Ta,Tb,Nx,Ny);
+	//printMatrixes(B,Ta,Tb,Nx,Ny);
 
-	int i = 0;
+	for (int i = 0 ; i < 10; i++) {
+
+	evolve(B,Ta,Tb,Nx,Ny);
+	
+	FILE *dskw1;
+	char FileName[50];
+	int file;
+	file=sprintf(FileName,"./OutputData/RlxMthd_v1.0_%d.dat",i);
+	file++;
+  	dskw1=fopen(FileName,"w+");
+
+	for (int c = 0; c < Nx * Ny; c++)
+	{		
+	int x=( c % Nx ) + 1;
+	int y=( c / Nx ) + 1;
+	fprintf(dskw1,"%d\t%d\t%f\n",x,y,Tb[c]);
+	
+	}
+
+	double * temp = Ta;
+	Ta = Tb;
+	Tb = temp;
+
+	}
+	
+	
+	/*int i = 0;
 	for (i = 0; i < 20000; ++i)
 	{
 		printf("Generation %d\n",i+1);
@@ -152,9 +208,9 @@ int main(int argc, char const **argv)
 		Ta = Tb;
 		Tb = temp;
 		printf("Test: %d\n",test(B,Ta,Tb,Nx,Ny));
-	}
+	}*/
 
-	printMatrixes(B,Ta,Tb,Nx,Ny);
+	//printMatrixes(B,Ta,Tb,Nx,Ny);
 
 	/*
 	printf("Transition: %f\n",transition(B,Ta,Nx,Ny,32));
