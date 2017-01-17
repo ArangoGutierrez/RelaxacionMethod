@@ -33,7 +33,7 @@ void fillB(int * matrix, int nx, int ny, struct Station *s, int ne){
 	}
 
 	int s_i = 0, s_j = 0;
-	for (i = 0; i < ne; ++i) matrix[ s[i].y * nx + s[i].y ] = 2;
+	for (i = 0; i < ne; ++i) matrix[ s[i].y * nx + s[i].x ] = 2;
 }
 
 void fillT(double * matrix, int nx, int ny,struct Station *s, int ne){
@@ -50,7 +50,8 @@ void prntB(int * matrix, int nx, int ny){
 	int i;
 	for (i = 1; i <= nx * ny; i++)
 	{
-		printf("%d\t", matrix[i-1]);
+		int b_i = (i-1)/nx, b_j = (i-1)%nx; 
+		printf("(%d,%d)%d\t",b_i,b_j,matrix[i-1]);
 		if(i % nx == 0) printf("\n");
 	}
 }
@@ -171,6 +172,7 @@ int main(int argc, char const **argv)
 	fillB(B,Nx,Ny,s,Ne);
 	fillT(Ta,Nx,Ny,s,Ne);
 	fillT(Tb,Nx,Ny,s,Ne);
+
 	//printMatrixes(B,Ta,Tb,Nx,Ny);
 
 	for (int i = 0 ; i < 10; i++) {
@@ -184,12 +186,10 @@ int main(int argc, char const **argv)
 	file++;
   	dskw1=fopen(FileName,"w+");
 
-	for (int c = 0; c < Nx * Ny; c++)
+	for (int c = 1; c <= Nx * Ny; c++)
 	{		
-	int x=( c % Nx ) + 1;
-	int y=( c / Nx ) + 1;
-	fprintf(dskw1,"%d\t%d\t%f\n",x,y,Tb[c]);
-	
+		int b_i = 1 +  (c-1)/Nx, b_j = 1 + (c-1)%Nx; 
+		fprintf(dskw1,"%d\t%d\t%f\n",b_i,b_j,Tb[c-1]);
 	}
 
 	double * temp = Ta;
