@@ -111,52 +111,52 @@ int main(int argc, char const **argv)
 	struct Station s[Ne];
 	//First Station
 	s[0].x=65;
-	s[0].y=10;
+	s[0].y=85;
 	s[0].t=22.6;
 
 	//Second Station
 	s[1].x=55;
-	s[1].y=20;
+	s[1].y=75;
 	s[1].t=23.2;
 
 	//Third Station
 	s[2].x=50;
-	s[2].y=25;
+	s[2].y=70;
 	s[2].t=22.7;
 
 	//Fourth Station
 	s[3].x=50;
-	s[3].y=35;
+	s[3].y=60;
 	s[3].t=22.9;
 
 	//Fith Station
 	s[4].x=40;
-	s[4].y=45;
+	s[4].y=50;
 	s[4].t=22.0;
 
 	//Sixth Station
 	s[5].x=50;
-	s[5].y=60;
+	s[5].y=35;
 	s[5].t=23.7;
 
 	//Seventh Station
 	s[6].x=35;
-	s[6].y=65;
+	s[6].y=30;
 	s[6].t=23.1;
 
 	//Eighth Station
 	s[7].x=50;
-	s[7].y=70;
+	s[7].y=25;
 	s[7].t=23.1;
 
 	//Ninth Station
 	s[8].x=35;
-	s[8].y=75;
+	s[8].y=20;
 	s[8].t=22.9;
 
 	//Tenth Station
 	s[9].x=45;
-	s[9].y=80;
+	s[9].y=15;
 	s[9].t=23.5;
 	
 	int * B = NULL;
@@ -171,7 +171,7 @@ int main(int argc, char const **argv)
 	fillT(Ta,Nx,Ny,s,Ne);
 	fillT(Tb,Nx,Ny,s,Ne);
 
-	for (int i = 0 ; i < 10; i++) {
+	for (int i = 0 ; i < 1000; i++) {
 
 
 	evolve(B,Ta,Tb,Nx,Ny);
