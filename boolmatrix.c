@@ -21,8 +21,7 @@ void prnt(int * matrix, int nx, int ny){
     	int i;
     	for (i = 1; i <= nx * ny; i++)
     		{
-        int b_i = (i-1)/nx, b_j = (i-1)%nx; 
-        printf("%d\t",matrix[i-1]);
+	printf("%d\t",matrix[i-1]);
         if(i % nx == 0) printf("\n");
     		}
 	}
@@ -37,18 +36,42 @@ void fileload(int* matrix,int Nx,int Ny){
     	file++;
     	FILE* file = fopen(FileName, "r");
     	int x = 0, y = 0;
-    	for(; fscanf(file, "%d", &x) && fscanf(file, "%d", &y) && !feof(file);) matrix [ y * Nx + x ] = 2;
+    	for(; fscanf(file, "%d\t%d", &x, &y) && !feof(file);) matrix [ y * Nx + x ] = 2;
  	fclose(file);
 		}
 }
+
+void propagation(int* M,int Nx,int Ny){
+	for (i = 0; i < nx * ny; ++i) {	
+
+	int row = 0, col = 0;
+	row = i / nx, col = i % nx;
+	
+	double up = ( M[row-1]  <= 0 || M[row-1] <= 2 ) ? 0 : 1;
+	
+	double down = ( row + 1 >= ny || M[ cell + nx ] == 0 ) ? 0 : M[cell + nx];
+	
+	double left = ( col - 1 < 0 || M[ cell - 1 ] == 0 ) ? 0 : M[ cell - 1 ];
+	
+	double right = ( col + 1 >= nx || M[ cell + 1 ] == 0) ? 0 : M[ cell + 1];
+	
+	double sum = ((up > 0) ? 1:0) + ((down > 0) ? 1:0) + ((left > 0) ? 1:0) + ((right > 0) ? 1:0);
+
+	double Tij = (up + down + left + right) / sum;
+		}
+	}
+
+
+
 
 int main(int argc, char const **argv){
 
     	int Nx = 500;
     	int Ny = 1397;
        	int * matrix = (int*) malloc( Nx * Ny * sizeof(int));
-    
-    	fileload(matrix,Nx,Ny);
+    	
+	fileload(matrix,Nx,Ny);
+	propagation(matrix,Nx,Ny);
     	prnt(matrix,Nx,Ny);
     	
     	free(matrix);

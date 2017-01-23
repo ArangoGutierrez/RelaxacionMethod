@@ -5,7 +5,7 @@
 		Lascilab
 		CIBioFi-QuanTIC
 		  
-		Last updated: January 17, 2017
+		Last updated: January 23, 2017
 
 	This program is in development. 
 
