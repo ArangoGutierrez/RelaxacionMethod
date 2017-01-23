@@ -31,13 +31,13 @@ void fileload(int* matrix,int Nx,int Ny){
    	int file;
    	char FileName[50];
    	for (int i = 0; i < Nx * Ny; ++i) matrix[i] = 0;
-   	for(int f=2; f <=3; f++)	
+   	for(int f=1; f <=3; f++)	
     		{
     	file=sprintf(FileName,"Maps/Contour_VALLE_960_Border_%d.dat",f);
     	file++;
     	FILE* file = fopen(FileName, "r");
     	int x = 0, y = 0;
-    	for(; fscanf(file, "%d", &x) && fscanf(file, "%d", &y) && !feof(file);) matrix [ y * Nx + x ] = 1;
+    	for(; fscanf(file, "%d", &x) && fscanf(file, "%d", &y) && !feof(file);) matrix [ y * Nx + x ] = 2;
  	fclose(file);
 		}
 }
