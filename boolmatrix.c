@@ -5,7 +5,7 @@
         Lascilab
         CIBioFi-QuanTIC
           
-        Last updated: January 23, 2017
+        Last updated: January 24, 2017
 
     This program is in development. 
 
@@ -17,19 +17,19 @@
 #include <stdio.h>  /* Standard I/O Library: printf */
 #include <math.h>   /* Standard Math Library */
 
-void prnt(int * matrix, int nx, int ny){
-    	int i;
-    	for (i = 1; i <= nx * ny; i++)
-    		{
-	printf("%d\t",matrix[i-1]);
-        if(i % nx == 0) printf("\n");
-    		}
-	}
 
-void fileload(int* matrix,int Nx,int Ny){
+void prnt(int * matrix, int nx, int ny){
+	int i;
+	for (i = 1; i <= nx * ny; i++)
+	{
+		printf("%d\t", matrix[i-1]);
+		if(i % nx == 0) printf("\n");
+	}
+}
+
+void mapload(int* matrix,int Nx,int Ny){
    	int file;
    	char FileName[50];
-   	for (int i = 0; i < Nx * Ny; ++i) matrix[i] = 0;
    	for(int f=1; f <=3; f++)	
     		{
     	file=sprintf(FileName,"Maps/Contour_VALLE_960_Border_%d.dat",f);
@@ -41,24 +41,27 @@ void fileload(int* matrix,int Nx,int Ny){
 		}
 }
 
-void propagation(int* M,int Nx,int Ny){
-	for (i = 0; i < nx * ny; ++i) {	
+void estload(int* matrix,int Nx,int Ny){
+   	FILE* file = fopen("Maps/estaciones.dat", "r");
+    	int x = 0, y = 0;
+    	for(; fscanf(file, "%d\t%d", &x, &y) && !feof(file);) matrix [ y * Nx + x ] = 1;
+ 	fclose(file);
+		
+}
 
-	int row = 0, col = 0;
-	row = i / nx, col = i % nx;
+int propagation(int* M,int Nx,int Ny, int i){
 	
-	double up = ( M[row-1]  <= 0 || M[row-1] <= 2 ) ? 0 : 1;
-	
-	double down = ( row + 1 >= ny || M[ cell + nx ] == 0 ) ? 0 : M[cell + nx];
-	
-	double left = ( col - 1 < 0 || M[ cell - 1 ] == 0 ) ? 0 : M[ cell - 1 ];
-	
-	double right = ( col + 1 >= nx || M[ cell + 1 ] == 0) ? 0 : M[ cell + 1];
-	
-	double sum = ((up > 0) ? 1:0) + ((down > 0) ? 1:0) + ((left > 0) ? 1:0) + ((right > 0) ? 1:0);
 
-	double Tij = (up + down + left + right) / sum;
-		}
+	int row = i / Nx;
+	int col = i % Nx;
+	
+	double up = 	( row - 1 < 0	|| M[i - Nx]  == 0	|| M[i - Nx] == 2 )	? 0 : 1;	
+	double down = 	( row + 1 >= Ny	|| M[i + Nx]  == 0	|| M[i + Nx] == 2 )	? 0 : 1;	
+	double left = 	( col - 1 < 0	|| M[i - 1]  == 0	|| M[i - 1] == 2 )	? 0 : 1;	
+	double right = 	( col + 1 >= Nx	|| M[i + 1]  == 0	|| M[i + 1] == 2 )	? 0 : 1;	
+	int sum = (up + down + left + right);
+	int B = ( sum < 1 ) ? 0 : 1;
+		return ((M[i]==2) ? 2 : B);	
 	}
 
 
@@ -68,13 +71,26 @@ int main(int argc, char const **argv){
 
     	int Nx = 500;
     	int Ny = 1397;
-       	int * matrix = (int*) malloc( Nx * Ny * sizeof(int));
+       	int * Ma = (int*) malloc( Nx * Ny * sizeof(int));
+    	for (int i = 0; i < Nx * Ny; ++i) Ma[i] = 0;
+       	int * Mb = (int*) malloc( Nx * Ny * sizeof(int));
+    	for (int i = 0; i < Nx * Ny; ++i) Mb[i] = 0;
+
+	mapload(Ma,Nx,Ny);/*Load de Map contour from the .dat file */
+	estload(Ma,Nx,Ny);/*Load de Coordinates of the estations from the .dat file*/
+	for(int iters=0;iters<300;iters++){
+	for(int i=0;i< Nx*Ny; i++){
+	Mb[i] = ( Ma[i]==1 || Ma[i]==2 ) ? Ma[i] : propagation(Ma,Nx,Ny,i);
+    			}
+		int * temp = Ma;
+		Ma = Mb;
+		Mb = temp;
+		}
+
+	prnt(Ma,Nx,Ny);
     	
-	fileload(matrix,Nx,Ny);
-	propagation(matrix,Nx,Ny);
-    	prnt(matrix,Nx,Ny);
-    	
-    	free(matrix);
+    	free(Ma);
+	free(Mb);
     
     	return 0;
 }
