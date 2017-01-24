@@ -5,7 +5,7 @@
 		Lascilab
 		CIBioFi-QuanTIC
 		  
-		Last updated: January 23, 2017
+		Last updated: January 24, 2017
 
 	This program is in development. 
 
@@ -25,22 +25,34 @@ struct Station
 };
 
 
-void fillB(int * matrix, int nx, int ny, struct Station *s, int ne){
-	int i = 0, row = 0, col = 0;
-	for (i = 0; i < nx * ny; i++){
-		row = i / nx, col = i % nx;
-		matrix[i] = ( row == 0 || col == 0  || row == ny - 1 || col == nx - 1) ? 0 : 1;
-	}
-	for (i = 0; i < ne; ++i) matrix[ s[i].y * nx + s[i].x ] = 2;
+void mapload(int* B,int Nx,int Ny){
+   	FILE* file = fopen("boolmatrix.dat", "r");
+    	int x = 0, y = 0, b = 0;
+    	for(; fscanf(file, "%d\t%d\t%d", &y, &x, &b) && !feof(file);) B[ y * Nx + x ] = b;
+ 	fclose(file);	
 }
 
-void fillT(double * matrix, int nx, int ny,struct Station *s, int ne){
+void estload(int* B,double* matrix,int Nx,int Ny,struct Station *s){
+   	FILE* file = fopen("Maps/estaciones.dat", "r");
+    	int x = 0, y = 0, i = 0;
+	double tmp = 0.0;
+    	for(; fscanf(file, "%d\t%d\t%f", &x, &y, &tmp) && !feof(file);){
+	B[ y * Nx + x ] = 2;
+	s[i].x = x;
+	s[i].y = y;
+	s[i].t =  tmp;
+	i++;
+	}
+ 	fclose(file);		
+}
+
+void Tempload(int * B,double * matrix, int nx, int ny,struct Station *s, int ne){
 	double sum = 0;
 	int i;
 	for (i = 0; i < ne; i++) sum = sum + s[i].t;
-	double To =  ( sum / ne );
+	double Tprom =  ( sum / ne );
 	
-	for (i=0; i < nx * ny; i++) matrix[i] = To;
+	for (i=0; i < nx * ny; i++) matrix[i] = ( B[i] == 0 )? 0 : Tprom;
 	for (i=0; i < ne ; i++) matrix[( s[i].y * nx + s[i].x ) ] = s[i].t;
 }
 
@@ -49,7 +61,7 @@ void prntB(int * matrix, int nx, int ny){
 	for (i = 1; i <= nx * ny; i++)
 	{
 		int b_i = (i-1)/nx, b_j = (i-1)%nx; 
-		printf("(%d,%d)%d\t",b_i,b_j,matrix[i-1]);
+		printf("%d\t",matrix[i-1]);
 		if(i % nx == 0) printf("\n");
 	}
 }
@@ -104,61 +116,12 @@ void printMatrixes(int * B, double * Ta, double * Tb, int nx, int ny){
 
 int main(int argc, char const **argv)
 {
-	int Nx = 100;
-	int Ny = 90;
-	int Ne = 10;
+	int Nx = 500;
+    	int Ny = 1397;
+	int Ne = 16;
 	
 	struct Station s[Ne];
-	//First Station
-	s[0].x=65;
-	s[0].y=85;
-	s[0].t=22.6;
 
-	//Second Station
-	s[1].x=55;
-	s[1].y=75;
-	s[1].t=23.2;
-
-	//Third Station
-	s[2].x=50;
-	s[2].y=70;
-	s[2].t=22.7;
-
-	//Fourth Station
-	s[3].x=50;
-	s[3].y=60;
-	s[3].t=22.9;
-
-	//Fith Station
-	s[4].x=40;
-	s[4].y=50;
-	s[4].t=22.0;
-
-	//Sixth Station
-	s[5].x=50;
-	s[5].y=35;
-	s[5].t=23.7;
-
-	//Seventh Station
-	s[6].x=35;
-	s[6].y=30;
-	s[6].t=23.1;
-
-	//Eighth Station
-	s[7].x=50;
-	s[7].y=25;
-	s[7].t=23.1;
-
-	//Ninth Station
-	s[8].x=35;
-	s[8].y=20;
-	s[8].t=22.9;
-
-	//Tenth Station
-	s[9].x=45;
-	s[9].y=15;
-	s[9].t=23.5;
-	
 	int * B = NULL;
 	double * Ta = NULL;
 	double * Tb = NULL;
@@ -166,13 +129,12 @@ int main(int argc, char const **argv)
 	B = (int *) malloc( Nx * Ny * sizeof(int));
 	Ta = (double *) malloc(Nx * Ny * sizeof(double));
 	Tb = (double *) malloc(Nx * Ny * sizeof(double));
-
-	fillB(B,Nx,Ny,s,Ne);
-	fillT(Ta,Nx,Ny,s,Ne);
-	fillT(Tb,Nx,Ny,s,Ne);
-
-	for (int i = 0 ; i < 1000; i++) {
-
+	
+	mapload(B,Nx,Ny);
+	estload(B,Ta,Nx,Ny,s);
+	Tempload(B,Ta,Nx,Ny,s,Ne);
+		
+	for (int i = 0 ; i < 10; i++) {
 
 	evolve(B,Ta,Tb,Nx,Ny);
 	

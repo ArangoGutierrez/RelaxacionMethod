@@ -17,16 +17,6 @@
 #include <stdio.h>  /* Standard I/O Library: printf */
 #include <math.h>   /* Standard Math Library */
 
-
-void prnt(int * matrix, int nx, int ny){
-	int i;
-	for (i = 1; i <= nx * ny; i++)
-	{
-		printf("%d\t", matrix[i-1]);
-		if(i % nx == 0) printf("\n");
-	}
-}
-
 void mapload(int* matrix,int Nx,int Ny){
    	int file;
    	char FileName[50];
@@ -44,9 +34,9 @@ void mapload(int* matrix,int Nx,int Ny){
 void estload(int* matrix,int Nx,int Ny){
    	FILE* file = fopen("Maps/estaciones.dat", "r");
     	int x = 0, y = 0;
-    	for(; fscanf(file, "%d\t%d", &x, &y) && !feof(file);) matrix [ y * Nx + x ] = 1;
- 	fclose(file);
-		
+	double t = 0;
+    	for(; fscanf(file, "%d\t%d\t%f", &x, &y, &t) && !feof(file);) matrix [ y * Nx + x ] = 1;
+ 	fclose(file);		
 }
 
 int propagation(int* M,int Nx,int Ny, int i){
@@ -64,8 +54,14 @@ int propagation(int* M,int Nx,int Ny, int i){
 		return ((M[i]==2) ? 2 : B);	
 	}
 
-
-
+void prnt(int * matrix, int nx, int ny){
+	int i;
+	for (i = 1; i <= nx * ny; i++)
+	{
+		int b_i = (i-1)/nx, b_j = (i-1)%nx; 
+		printf("%d\t%d\t%d\n",b_i,b_j,(matrix[i-1]==2) ? 0 :matrix[i-1] );
+	}
+	}
 
 int main(int argc, char const **argv){
 
@@ -78,14 +74,14 @@ int main(int argc, char const **argv){
 
 	mapload(Ma,Nx,Ny);/*Load de Map contour from the .dat file */
 	estload(Ma,Nx,Ny);/*Load de Coordinates of the estations from the .dat file*/
-	for(int iters=0;iters<300;iters++){
+	for(int iters=0;iters<300;iters++)	{
 	for(int i=0;i< Nx*Ny; i++){
 	Mb[i] = ( Ma[i]==1 || Ma[i]==2 ) ? Ma[i] : propagation(Ma,Nx,Ny,i);
     			}
 		int * temp = Ma;
 		Ma = Mb;
 		Mb = temp;
-		}
+						}
 
 	prnt(Ma,Nx,Ny);
     	
