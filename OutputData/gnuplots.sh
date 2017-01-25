@@ -1,9 +1,9 @@
 #bin/bash
-for i in {0..10}
+for i in {0..9}
 do
     /usr/bin/gnuplot <<__EOF
 set view map
-set pm3d interpolate 0,0
+set pm3d
 set dgrid3d
 # Set Palette Heatmap 
 set palette rgb 7,5,15 

@@ -26,32 +26,32 @@ struct Station
 
 
 void mapload(int* B,int Nx,int Ny){
-   	FILE* file = fopen("boolmatrix.dat", "r");
+   	FILE *file = fopen("boolmatrix.dat", "r");
     	int x = 0, y = 0, b = 0;
     	for(; fscanf(file, "%d\t%d\t%d", &y, &x, &b) && !feof(file);) B[ y * Nx + x ] = b;
  	fclose(file);	
 }
 
-void estload(int* B,double* matrix,int Nx,int Ny,struct Station *s){
-   	FILE* file = fopen("Maps/estaciones.dat", "r");
+void estload(int* B,double* matrix,int Nx,int Ny,struct Station* s){
+   	FILE *file = fopen("Maps/estaciones.dat", "r");
     	int x = 0, y = 0, i = 0;
 	double tmp = 0.0;
-    	for(; fscanf(file, "%d\t%d\t%f", &x, &y, &tmp) && !feof(file);){
+    	for(; fscanf(file, "%d\t%d\t%lf",&x,&y,&tmp) && !feof(file);) {
 	B[ y * Nx + x ] = 2;
 	s[i].x = x;
 	s[i].y = y;
 	s[i].t =  tmp;
 	i++;
 	}
+	
  	fclose(file);		
 }
 
-void Tempload(int * B,double * matrix, int nx, int ny,struct Station *s, int ne){
+void Tempload(int * B,double * matrix, int nx, int ny,struct Station* s, int ne){
 	double sum = 0;
 	int i;
 	for (i = 0; i < ne; i++) sum = sum + s[i].t;
 	double Tprom =  ( sum / ne );
-	
 	for (i=0; i < nx * ny; i++) matrix[i] = ( B[i] == 0 )? 0 : Tprom;
 	for (i=0; i < ne ; i++) matrix[( s[i].y * nx + s[i].x ) ] = s[i].t;
 }
@@ -133,8 +133,8 @@ int main(int argc, char const **argv)
 	mapload(B,Nx,Ny);
 	estload(B,Ta,Nx,Ny,s);
 	Tempload(B,Ta,Nx,Ny,s,Ne);
-		
-	for (int i = 0 ; i < 10; i++) {
+	
+	for (int i = 0 ; i < 2000; i++) {
 
 	evolve(B,Ta,Tb,Nx,Ny);
 	
