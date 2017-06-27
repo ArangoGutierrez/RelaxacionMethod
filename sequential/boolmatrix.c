@@ -19,12 +19,10 @@
 #include <time.h>   /* to take execution time */
 
 void mapload(int* matrix,int Nx,int Ny){
-    int file;
-    char FileName[50];
-    for(int f=1; f <=3; f++){
-        file=sprintf(FileName,"../Maps/Contour_VALLE_960_Border_%d.dat",f);
-        file++;
-        FILE* file = fopen(FileName, "r");
+    char filename[50];
+    for(int f=1; f <= CONTOURS; f++){
+        sprintf(filename,"../Maps/Contour_VALLE_960_Border_%d.dat",f);
+        FILE * file = fopen(filename, "r");
         int x = 0, y = 0;
         for(; fscanf(file, "%d\t%d", &x, &y) && !feof(file);) matrix [ y * Nx + x ] = 2;
         fclose(file);
@@ -36,7 +34,7 @@ void estload(int* matrix,int Nx,int Ny){
     int x = 0, y = 0;
     double t = 0;
     matrix[(1400 - 481) * Nx + 297] = 1;
-    matrix[175 * Nx + 54] = 1;
+    // matrix[175 * Nx + 54] = 1;
     // for(; fscanf(file, "%d\t%d\t%f", &x, &y, &t) && !feof(file);) matrix [ y * Nx + x ] = 1;
     // fclose(file);       
 }
@@ -56,8 +54,8 @@ int propagation(int* M,int Nx,int Ny, int i){
     return ((M[i]==2) ? 2 : B); 
     }
 
-void saveAsMatrix(int * matrix, int nx, int ny){
-    FILE * pf = fopen("../Maps/boolmap_matrix.dat","w");
+void saveAsMatrix(const char * filename, int * matrix, int nx, int ny){
+    FILE * pf = fopen(filename,"w");
     int i;
     for (i = 1; i <= nx * ny; i++){
         fprintf(pf,"%d\t",matrix[i-1]);
@@ -66,8 +64,8 @@ void saveAsMatrix(int * matrix, int nx, int ny){
     fclose(pf);
 }
 
-void saveAsTable(int * matrix, int nx, int ny){
-    FILE * pf = fopen("../Maps/boolmap_table.dat","w");
+void saveAsTable(const char * filename, int * matrix, int nx, int ny){
+    FILE * pf = fopen(filename,"w");
     int x = 0, y = 0;
     int i;
     for (i = 1; i <= nx * ny; i++){
@@ -75,7 +73,7 @@ void saveAsTable(int * matrix, int nx, int ny){
         // fprintf(pf,"%d\t%d\t%d\n",b_i,b_j,(matrix[i-1]==2) ? 0 :matrix[i-1] );
         x = ( (i-1) % nx );
         y = ( (i-1) / nx );
-        fprintf(pf,"%d\t%d\t%d\n",x,y,(matrix[i-1]==2) ? 0 :matrix[i-1] );
+        fprintf(pf,"%d %d %d\n",x,y,(matrix[i-1]==2) ? 0 :matrix[i-1] );
     }
     fclose(pf);
 }
@@ -120,6 +118,15 @@ int main(int argc, char const **argv){
     mapload(Ma,Nx,Ny);/*Load de Map contour from the .dat file */
     estload(Ma,Nx,Ny);/*Load de Coordinates of the estations from the .dat file*/
     
+    #if SAVEINIT == 1
+    saveAsTable("../OutputData/boolmap_contour_table.dat",Ma,Nx,Ny);
+    #elif SAVEINIT == 2
+    saveAsMatrix("../OutputData/boolmap_contour_matrix.dat",Ma,Nx,Ny);
+    #else
+    saveAsTable("../OutputData/boolmap_contour_table.dat",Ma,Nx,Ny);
+    saveAsMatrix("../OutputData/boolmap_contour_matrix.dat",Ma,Nx,Ny);
+    #endif
+    
     clock_t start = 0.0, end = 0.0;
     double sum = 0.0;
     start = clock();
@@ -138,13 +145,13 @@ int main(int argc, char const **argv){
     savetime(sum);
     #endif
 
-    #if SAVE == 1
-    saveAsTable(Ma,Nx,Ny);
-    #elif SAVE == 2
-    saveAsMatrix(Ma,Nx,Ny);
+    #if SAVELAST == 1
+    saveAsTable("../OutputData/boolmap_table.dat",Ma,Nx,Ny);
+    #elif SAVELAST == 2
+    saveAsMatrix("../OutputData/boolmap_matrix.dat", Ma,Nx,Ny);
     #else
-    saveAsTable(Ma,Nx,Ny);
-    saveAsMatrix(Ma,Nx,Ny);
+    saveAsTable("../OutputData/boolmap_table.dat",Ma,Nx,Ny);
+    saveAsMatrix("../OutputData/boolmap_matrix.dat",Ma,Nx,Ny);
     #endif
         
     free(Ma);

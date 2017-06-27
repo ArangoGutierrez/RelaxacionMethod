@@ -27,7 +27,7 @@ struct Station
 
 
 void boolmapload(int* B,int Nx,int Ny){
-    FILE *file = fopen("../Maps/boolmap_table.dat","r");
+    FILE *file = fopen("../OutputData/boolmap_table.dat","r");
     int x = 0, y = 0, b = 0;
     for(; fscanf(file, "%d\t%d\t%d", &y, &x, &b) && !feof(file);) B[ y * Nx + x ] = b;
     fclose(file);   

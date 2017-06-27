@@ -10,12 +10,16 @@ COMPILER = g++
 CFLAGS = -lm -O3 
 
 # BOOL MATRIX FLAGS
-# -D SAVE=1 Save the boolean matrix in Maps directory as table format
-# -D SAVE=2 Save the boolean matrix in Maps directory as marix format
-# -D SAVE=3 Save the boolean matrix in Maps directory in both formats matrix and table
+# -D SAVELAST=1 Save the boolean matrix in Maps directory as table format
+# -D SAVELAST=2 Save the boolean matrix in Maps directory as marix format
+# -D SAVELAST=3 Save the boolean matrix in Maps directory in both formats matrix and table
+# -D SAVEINIT=1 Save the bool matrix contour as table format
+# -D SAVEINIT=2 Save the bool matrix contour as matrix format
+# -D SAVEINIT=3 Save the bool matrix contour in both formats
 # -D ITERATIONS=<int> Cellular automata number of generations
+# -D CONTOURS=1..3 Read a number of contour files
 # -D TIME to take time 
-BFLAGS = -D ITERATIONS=1000 -D SAVE=3 -D TIME
+BFLAGS = -D ITERATIONS=1000 -D CONTOURS=2 -D SAVELAST=3 -D SAVEINIT=3 -D TIME
 
 # RELAXATION METHOD FLAGS
 # -D SAVEINIT Save the temperature matrix initial state
@@ -38,7 +42,13 @@ compilebool:
 # Compile the program with -D SAVE=2 and run it.
 # Then you can make the following command
 plotbool:
-	@gnuplot -p -e "filename='../Maps/boolmap_matrix.dat'" bool_gnuplot.sh
+	@gnuplot -p -e "filename='../OutputData/boolmap_matrix.dat'" ../OutputData/bool_gnuplot.gnu
+
+plotboolcontour:
+	@gnuplot -p -e "filename='../OutputData/boolmap_contour_matrix.dat'" ../OutputData/bool_gnuplot.gnu
+
+plotboolheatmap:
+	@gnuplot -p -e "filename='../OutputData/boolmap_table.dat'" ../OutputData/heatmap_gnuplot.gnu
 
 
 # RELAXATION METHOD
@@ -57,4 +67,4 @@ plotheatmap:
 # Remove time_bool and time_relaxation
 # Remove generation files
 clean:
-	@rm -f $(TARGET_1) $(TARGET_2) ../Maps/boolmap*.dat time*.txt ../OutputData/RlxMthd_v1.0_*.dat *.png
+	@rm -f $(TARGET_1) $(TARGET_2) ../OutputData/boolmap*.dat time*.txt ../OutputData/RlxMthd_v1.0_*.dat *.png
