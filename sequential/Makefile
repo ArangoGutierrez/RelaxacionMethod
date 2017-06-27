@@ -18,13 +18,15 @@ CFLAGS = -lm -O3
 BFLAGS = -D ITERATIONS=1000 -D SAVE=3 -D TIME
 
 # RELAXATION METHOD FLAGS
-# -D SAVE=1 Save the boolean matrix in Maps directory as table format
-# -D SAVE=2 Save the boolean matrix in Maps directory as marix format
-# -D SAVE=3 Save the boolean matrix in Maps directory in both formats matrix and table
-# -D ITERATIONS=<int> Cellular automata number of generations
+# -D SAVEINIT Save the temperature matrix initial state
+# -D SAVEALL Save all generations of the temperature matrix
+# -D SAVELAST Save the temperature matrix last state
+# -D GENERATIONS=<int> The system evolves until it reaches a given number of generations
+# -D GENERATIONS=0 The system evolves until it reaches a steady state (convergence)
 # -D TIME to take time 
-BFLAGS = -D ITERATIONS=1000 -D SAVE=3 -D TIME
+RFLAGS = -D GENERATIONS=1000 -D SAVE=3 -D TIME -D SAVEINIT -D SAVELAST
 
+# BOOL MATRIX 
 runbool: clean compilebool
 	@./$(TARGET_1)
 
@@ -35,11 +37,23 @@ compilebool:
 # Compile the program with -D SAVE=2 and run it.
 # Then you can make the following command
 plotbool:
-	@gnuplot -p -e "filename='../Maps/boolmap_matrix.dat'" gnuplot.sh
+	@gnuplot -p -e "filename='../Maps/boolmap_matrix.dat'" bool_gnuplot.sh
 
+
+# RELAXATION METHOD
+runrelaxation: clean compilerelaxation
+	@./$(TARGET_2)
+
+compilerelaxation:
+	@$(COMPILER) $(TARGET_2)$(EXT) -o $(TARGET_2) $(CFLAGS) $(RFLAGS)
+
+plotheatmap:
+	@gnuplot -p heatmap_gnuplot.sh
+
+# Remove boolmatrix binary
+# Remove rlxmmthd binary
+# Remove boolmap_matrix and boolmap_table
+# Remove time_bool and time_relaxation
+# Remove generation files
 clean:
-	@rm -rf $(TARGET_1) $ $(TARGET_2) *.txt ../Maps/boolmap.dat
-
-
-runrelaxation: compilerelaxation
-
+	@rm -f $(TARGET_1) $(TARGET_2) ../Maps/boolmap*.dat time*.txt ../OutputData/RlxMthd_v1.0_*d.dat 	

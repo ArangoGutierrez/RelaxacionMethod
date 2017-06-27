@@ -124,6 +124,12 @@ void printMatrixes(int * B, double * Ta, double * Tb, int nx, int ny){
     prntT(Tb,nx,ny);
 }
 
+void savetime(double time){
+    FILE * pf = fopen("time_relaxation.txt","a+");
+    fprintf(pf, "%f\n",time);
+    fclose(pf); 
+}
+
 int main(int argc, char const **argv)
 {
 
@@ -152,7 +158,7 @@ int main(int argc, char const **argv)
     puttemperatures(B,Ta,Nx,Ny,s,Ne);
 
     #ifdef SAVEINIT
-    sprintf(filename,"./OutputData/RlxMthd_v1.0_%d.dat",0);
+    sprintf(filename,"../OutputData/RlxMthd_v1.0_%d.dat",0);
     savetemperatures(filename,Ta,Nx,Ny);
     #endif    
 
@@ -197,6 +203,9 @@ int main(int argc, char const **argv)
     sum = (end -start) / (double) CLOCKS_PER_SEC;
     #endif
 
+    #ifdef TIME 
+    savetime(sum);
+    #endif
 
     #ifdef SAVELAST
     sprintf(filename,"../OutputData/RlxMthd_v1.0_%d.dat",GENERATIONS);
