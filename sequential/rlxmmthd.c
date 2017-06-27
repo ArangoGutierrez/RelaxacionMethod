@@ -33,27 +33,47 @@ void boolmapload(int* B,int Nx,int Ny){
     fclose(file);   
 }
 
-void loadandputstations(int* B, int Nx,int Ny,struct Station* s){
-    FILE *file = fopen("../Maps/estaciones.dat", "r");
-    int x = 0, y = 0, i = 0;
-    double tmp = 0.0;
-    for(; fscanf(file, "%d\t%d\t%lf",&x,&y,&tmp) && !feof(file);) {
-        B[ y * Nx + x ] = 2;
-        s[i].x = x;
-        s[i].y = y;
-        s[i].t =  tmp;
-        i++;
-    }
-    fclose(file);       
+void loadstations(struct Station * s, int ne){
+    // FILE * file = fopen("../Maps/estaciones.dat", "r");
+    // int x = 0, y = 0, i = 0;
+    // for(; fscanf(file, "%d %d %lf",&x,&y,&tmp) && !feof(file);){
+    //     s[i].x = x;
+    //     s[i].y = y;
+    //     s[i].t = tmp;
+    //     i++;
+    // }
+    // double tmp = 0.0;
+    // fclose(file);
+    s[0].x = 297;
+    s[0].y = (1400 - 481);
+    s[0].t = 38.2490;
+
+    s[0].x = 54;
+    s[0].y = 175;
+    s[0].t = 20.7490;
 }
 
-void puttemperatures(int * B, double * matrix, int nx, int ny,struct Station * s, int ne){
+void putstations(int* B, int Nx,int Ny, struct Station * s, int ne){
+    int i = 0;
+    for(int i=0; i<ne; ++i) B[ s[i].y * Nx + s[i].x ] = 2;
+}
+
+void puttemperatures(int * B, double * matrix, int nx, int ny, struct Station * s, int ne){
+    printf("Checking %d.%d.%d\n",2,2,1);
     double sum = 0;
     int i;
+    printf("Checking %d.%d.%d\n",2,2,2);
     for (i = 0; i < ne; i++) sum = sum + s[i].t;
+    printf("Checking %d.%d.%d\n",2,2,3);
     double Tprom =  ( sum / ne );
-    for (i=0; i < nx * ny; i++) matrix[i] = ( B[i] == 0 )? 0 : Tprom;
-    for (i=0; i < ne ; i++) matrix[( s[i].y * nx + s[i].x ) ] = s[i].t;
+    printf("Checking %d.%d.%d\n",2,2,4);
+    for (i=0; i < nx * ny; ++i) matrix[i] = ( B[i] == 0 )? 0 : Tprom;
+    printf("Checking %d.%d.%d\n",2,2,5);
+    for (i=0; i < ne ; ++i) {
+        printf("Checking %d.%d.%d.%d => %d , %d\n",2,2,5,i,s[i].y,s[i].x);
+        matrix[( s[i].y * nx + s[i].x ) ] = s[i].t;
+    }
+    printf("Checking %d.%d.%d\n",2,2,6);
 }
 
 void prntB(int * matrix, int nx, int ny){
@@ -74,12 +94,12 @@ void prntT(double * matrix, int nx, int ny){
     }
 }
 
-void savetemperatures(const char * filename, int * matrix, int nx, int ny){
+void savetemperatures(const char * filename, double * matrix, int nx, int ny){
     FILE * pf = fopen(filename,"w");
     int i = 0, x = 0, y = 0;
     for (i = 0; i < nx * ny; ++i){
-        x = ( i % Nx ) + 1;
-        y = ( i / Nx ) + 1;
+        x = ( i % nx ) + 1;
+        y = ( i / nx ) + 1;
         fprintf(pf,"%d\t%d\t%f\n",x,y,matrix[i]);
     }
     fclose(pf);
@@ -138,9 +158,11 @@ int main(int argc, char const **argv)
     return 0;
     #endif
 
+    printf("Checking %d\n",1);
+
     int Nx = 500;
     int Ny = 1397;
-    int Ne = 16;
+    int Ne = 2;
     char filename[50];
     
     struct Station s[Ne];
@@ -153,9 +175,17 @@ int main(int argc, char const **argv)
     Ta = (double *) malloc(Nx * Ny * sizeof(double));
     Tb = (double *) malloc(Nx * Ny * sizeof(double));
     
+    printf("Checking %d\n",2);
+
     boolmapload(B,Nx,Ny);
-    loadandputstations(B,Nx,Ny,s);
+    printf("Checking %d.%d\n",2,1);
+    loadstations(s,Ne);
+    putstations(B,Nx,Ny,s,Ne);
+    printf("Checking %d.%d\n",2,2);
     puttemperatures(B,Ta,Nx,Ny,s,Ne);
+    printf("Checking %d.%d\n",2,3);
+
+    printf("Checking %d\n",3);
 
     #ifdef SAVEINIT
     sprintf(filename,"../OutputData/RlxMthd_v1.0_%d.dat",0);
@@ -165,6 +195,7 @@ int main(int argc, char const **argv)
     clock_t start = 0.0, end = 0.0;
     double sum = 0.0;
 
+    printf("Checking %d\n",4);
     #if GENERATIONS == 0
     /* The system evolves until it reaches a steady state (convergence) */
     start = clock();
@@ -187,13 +218,13 @@ int main(int argc, char const **argv)
     /* The system evolves until it reaches a given number of generations */
     start = clock();
     for (int i = 0 ; i < GENERATIONS; i++) {
-
+        printf("Checking %d\n",5);
         nextstate(B,Ta,Tb,Nx,Ny);
-        
+        printf("Checking %d\n",6);
         double * temp = Ta;
         Ta = Tb;
         Tb = temp;
-
+        printf("Checking %d\n",7);
         #ifdef SAVEALL 
         sprintf(filename,"../OutputData/RlxMthd_v1.0_%d.dat",i);
         savetemperatures(filename,Ta,Nx,Ny);
@@ -201,20 +232,21 @@ int main(int argc, char const **argv)
     }
     end = clock();
     sum = (end -start) / (double) CLOCKS_PER_SEC;
+    printf("Checking %d\n",8);
     #endif
 
     #ifdef TIME 
     savetime(sum);
     #endif
-
+    printf("Checking %d\n",9);
     #ifdef SAVELAST
     sprintf(filename,"../OutputData/RlxMthd_v1.0_%d.dat",GENERATIONS);
     savetemperatures(filename,Ta,Nx,Ny);
     #endif
-    
+    printf("Checking %d\n",10);
     free(B);
     free(Ta);
     free(Tb);
-
+    printf("Checking %d\n",11);
     return 0;
 }
