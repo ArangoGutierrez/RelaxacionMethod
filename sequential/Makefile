@@ -24,7 +24,8 @@ BFLAGS = -D ITERATIONS=1000 -D SAVE=3 -D TIME
 # -D GENERATIONS=<int> The system evolves until it reaches a given number of generations
 # -D GENERATIONS=0 The system evolves until it reaches a steady state (convergence)
 # -D TIME to take time 
-RFLAGS = -D GENERATIONS=10 -D SAVEINIT -D SAVELAST -D TIME
+RGENERATIONS = 1
+RFLAGS = -D GENERATIONS=$(RGENERATIONS) -D SAVEINIT -D SAVELAST -D TIME
 
 # BOOL MATRIX 
 runbool: clean compilebool
@@ -41,14 +42,14 @@ plotbool:
 
 
 # RELAXATION METHOD
-runrelaxation: compilerelaxation
+runrelaxation: runbool compilerelaxation
 	@./$(TARGET_2)
 
 compilerelaxation:
 	@$(COMPILER) $(TARGET_2)$(EXT) -o $(TARGET_2) $(CFLAGS) $(RFLAGS)
 
 plotheatmap:
-	@./heatmap_gnuplot.sh
+	@./heatmap_gnuplot.sh $(RGENERATIONS)
 
 # Remove boolmatrix binary
 # Remove rlxmmthd binary
@@ -56,4 +57,4 @@ plotheatmap:
 # Remove time_bool and time_relaxation
 # Remove generation files
 clean:
-	@rm -f $(TARGET_1) $(TARGET_2) ../Maps/boolmap*.dat time*.txt ../OutputData/RlxMthd_v1.0_*d.dat 	
+	@rm -f $(TARGET_1) $(TARGET_2) ../Maps/boolmap*.dat time*.txt ../OutputData/RlxMthd_v1.0_*.dat *.png

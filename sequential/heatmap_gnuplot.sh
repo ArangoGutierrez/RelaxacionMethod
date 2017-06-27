@@ -1,5 +1,5 @@
 #bin/bash
-for i in {0..9}
+for i in $(seq 0 $1)
 do
     /usr/bin/gnuplot <<__EOF
 set view map
