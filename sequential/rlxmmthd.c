@@ -34,23 +34,24 @@ void boolmapload(int* B,int Nx,int Ny){
 }
 
 void loadstations(struct Station * s, int ne){
-    // FILE * file = fopen("../Maps/estaciones.dat", "r");
-    // int x = 0, y = 0, i = 0;
-    // for(; fscanf(file, "%d %d %lf",&x,&y,&tmp) && !feof(file);){
-    //     s[i].x = x;
-    //     s[i].y = y;
-    //     s[i].t = tmp;
-    //     i++;
-    // }
-    // double tmp = 0.0;
-    // fclose(file);
-    s[0].x = 297;
-    s[0].y = (1400 - 481);
-    s[0].t = 38.2490;
+    FILE * file = fopen("../Maps/stations.dat", "r");
+    int x = 0, y = 0, i = 0;
+    double tmp = 0.0;
+    for(; fscanf(file, "%d\t%d\t%lf",&x,&y,&tmp) && !feof(file) && (i < ne) ;){
+        s[i].x = x;
+        s[i].y = y;
+        s[i].t = tmp;
+        printf("Station %d,%d => %lf\n",s[i].x,s[i].y,s[i].t);
+        ++i;
+    }
+    fclose(file);
+    // s[0].x = 297;
+    // s[0].y = (1400 - 481);
+    // s[0].t = 38.2490;
 
-    s[1].x = 54;
-    s[1].y = 175;
-    s[1].t = 20.7490;
+    // s[1].x = 54;
+    // s[1].y = 175;
+    // s[1].t = 20.7490;
 }
 
 void putstations(int* B, int Nx,int Ny, struct Station * s, int ne){
@@ -154,7 +155,7 @@ int main(int argc, char const **argv)
     
     int Nx = 500;
     int Ny = 1397;
-    int Ne = 2;
+    int Ne = 16;
     char filename[50];
     
     struct Station s[Ne];

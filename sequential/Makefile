@@ -19,7 +19,7 @@ CFLAGS = -lm -O3
 # -D ITERATIONS=<int> Cellular automata number of generations
 # -D CONTOURS=1..3 Read a number of contour files
 # -D TIME to take time 
-BFLAGS = -D ITERATIONS=1000 -D CONTOURS=2 -D SAVELAST=3 -D SAVEINIT=3 -D TIME
+BFLAGS = -D ITERATIONS=1000 -D CONTOURS=3 -D SAVELAST=3 -D SAVEINIT=3 -D TIME
 
 # RELAXATION METHOD FLAGS
 # -D SAVEINIT Save the temperature matrix initial state
@@ -28,7 +28,7 @@ BFLAGS = -D ITERATIONS=1000 -D CONTOURS=2 -D SAVELAST=3 -D SAVEINIT=3 -D TIME
 # -D GENERATIONS=<int> The system evolves until it reaches a given number of generations
 # -D GENERATIONS=-1 The system evolves until it reaches a steady state (convergence)
 # -D TIME to take time 
-RGENERATIONS = 100
+RGENERATIONS = 300
 RFLAGS = -D GENERATIONS=$(RGENERATIONS) -D SAVEINIT -D SAVELAST -D TIME
 
 # BOOL MATRIX 
@@ -59,13 +59,13 @@ compilerelaxation:
 	@$(COMPILER) $(TARGET_2)$(EXT) -o $(TARGET_2) $(CFLAGS) $(RFLAGS)
 
 plotrlxinitheatmap:
-	@gnuplot -p -e "filename='../OutputData/RlxMthd_v1.0_0.dat'" ../OutputData/heatmap_gnuplot.gnu
+	@gnuplot -p -e "filename='../OutputData/RlxMthd_v1.0_1.dat'" ../OutputData/heatmap_gnuplot.gnu
 
 plotrlxlastheatmap:
 	@gnuplot -p -e "filename='../OutputData/RlxMthd_v1.0_$(RGENERATIONS).dat'" ../OutputData/heatmap_gnuplot.gnu
 
 createrelaxationimages:
-	@./heatmap_gnuplot.sh $(RGENERATIONS)
+	@../OutputData/heatmap_images.sh $(RGENERATIONS)
 
 # Remove boolmatrix binary
 # Remove rlxmmthd binary
@@ -73,4 +73,4 @@ createrelaxationimages:
 # Remove time_bool and time_relaxation
 # Remove generation files
 clean:
-	@rm -f $(TARGET_1) $(TARGET_2) ../OutputData/boolmap*.dat time*.txt ../OutputData/RlxMthd_v1.0_*.dat *.png
+	@rm -f $(TARGET_1) $(TARGET_2) ../OutputData/boolmap*.dat time*.txt ../OutputData/RlxMthd_v1.0_*.dat ../OutputData/*.png

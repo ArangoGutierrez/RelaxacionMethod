@@ -30,13 +30,17 @@ void mapload(int* matrix,int Nx,int Ny){
 }
 
 void estload(int* matrix,int Nx,int Ny){
-    // FILE* file = fopen("../Maps/estaciones.dat", "r");
+    FILE * file = fopen("../Maps/stations.dat", "r");
     int x = 0, y = 0;
-    double t = 0;
-    matrix[(1400 - 481) * Nx + 297] = 1;
+    double tmp = 0.0;
+    for(; fscanf(file, "%d\t%d\t%lf",&x,&y,&tmp) && !feof(file);) matrix [ y * Nx + x ] = 1;
+    fclose(file);
+
+    // int x = 0, y = 0;
+    // double t = 0;
+    // matrix[(1400 - 481) * Nx + 297] = 1;
     // matrix[175 * Nx + 54] = 1;
-    // for(; fscanf(file, "%d\t%d\t%f", &x, &y, &t) && !feof(file);) matrix [ y * Nx + x ] = 1;
-    // fclose(file);       
+    
 }
 
 int propagation(int* M,int Nx,int Ny, int i){
@@ -52,7 +56,7 @@ int propagation(int* M,int Nx,int Ny, int i){
     int B = ( sum < 1 ) ? 0 : 1;
     
     return ((M[i]==2) ? 2 : B); 
-    }
+}
 
 void saveAsMatrix(const char * filename, int * matrix, int nx, int ny){
     FILE * pf = fopen(filename,"w");
