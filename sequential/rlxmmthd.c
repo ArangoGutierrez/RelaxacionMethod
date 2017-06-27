@@ -29,7 +29,7 @@ struct Station
 void boolmapload(int* B,int Nx,int Ny){
     FILE *file = fopen("../OutputData/boolmap_table.dat","r");
     int x = 0, y = 0, b = 0;
-    for(; fscanf(file, "%d\t%d\t%d", &y, &x, &b) && !feof(file);) B[ y * Nx + x ] = b;
+    for(; fscanf(file, "%d %d %d\n", &x, &y, &b) && !feof(file);) B[ y * Nx + x ] = b;
     fclose(file);   
 }
 
@@ -199,7 +199,7 @@ int main(int argc, char const **argv)
     #else
     /* The system evolves until it reaches a given number of generations */
     start = clock();
-    for (int i = 0 ; i < GENERATIONS; i++) {
+    for (int i = 1 ; i <= GENERATIONS; i++) {
         nextstate(B,Ta,Tb,Nx,Ny);
         double * temp = Ta;
         Ta = Tb;
