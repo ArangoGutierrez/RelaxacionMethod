@@ -26,9 +26,9 @@ BFLAGS = -D ITERATIONS=1000 -D CONTOURS=2 -D SAVELAST=3 -D SAVEINIT=3 -D TIME
 # -D SAVEALL Save all generations of the temperature matrix
 # -D SAVELAST Save the temperature matrix last state
 # -D GENERATIONS=<int> The system evolves until it reaches a given number of generations
-# -D GENERATIONS=0 The system evolves until it reaches a steady state (convergence)
+# -D GENERATIONS=-1 The system evolves until it reaches a steady state (convergence)
 # -D TIME to take time 
-RGENERATIONS = 20
+RGENERATIONS = 100
 RFLAGS = -D GENERATIONS=$(RGENERATIONS) -D SAVEINIT -D SAVELAST -D TIME
 
 # BOOL MATRIX 
@@ -47,8 +47,8 @@ plotbool:
 plotboolcontour:
 	@gnuplot -p -e "filename='../OutputData/boolmap_contour_matrix.dat'" ../OutputData/bool_gnuplot.gnu
 
-plotboolheatmap:
-	@gnuplot -p -e "filename='../OutputData/boolmap_table.dat'" ../OutputData/heatmap_gnuplot.gnu
+#plotboolheatmap:
+#	@gnuplot -p -e "filename='../OutputData/boolmap_table.dat'" ../OutputData/heatmap_gnuplot.gnu
 
 
 # RELAXATION METHOD
@@ -58,7 +58,10 @@ runrelaxation: runbool compilerelaxation
 compilerelaxation:
 	@$(COMPILER) $(TARGET_2)$(EXT) -o $(TARGET_2) $(CFLAGS) $(RFLAGS)
 
-plotrelaxationheatmap:
+plotrlxinitheatmap:
+	@gnuplot -p -e "filename='../OutputData/RlxMthd_v1.0_0.dat'" ../OutputData/heatmap_gnuplot.gnu
+
+plotrlxlastheatmap:
 	@gnuplot -p -e "filename='../OutputData/RlxMthd_v1.0_$(RGENERATIONS).dat'" ../OutputData/heatmap_gnuplot.gnu
 
 createrelaxationimages:

@@ -118,7 +118,10 @@ int test(int * B, double * Ta, double * Tb, int nx, int ny){
     // result = (1 / (nx*ny)) * sqrt(result);
     result =  sqrt(result);
     //printf("Test Result: %.10f\n",result);
-    return ( result <= 0.0000001 ) ? 1 : 0;
+    // printf("Convergence: %lf <= %lf\n",result,0.0000001);
+    // return ( result <= 0.0000001 ) ? 1 : 0;
+    // printf("Convergence: %lf <= %lf\n",result,0.01);
+    // return ( result <= 0.01 ) ? 1 : 0;
 }
 
 void nextstate(int * B, double * Tin, double * Tout, int nx, int ny){
@@ -177,10 +180,11 @@ int main(int argc, char const **argv)
     clock_t start = 0.0, end = 0.0;
     double sum = 0.0;
 
-    printf("Checking %d\n",4);
-    #if GENERATIONS == 0
+    #if GENERATIONS == -1
     /* The system evolves until it reaches a steady state (convergence) */
+    printf("The system evolves until it reaches a steady state (convergence)\n");
     start = clock();
+    int i = 0;
     while( test(B,Ta,Tb,Nx,Ny) != 1 ){
 
         nextstate(B,Ta,Tb,Nx,Ny);
@@ -192,18 +196,21 @@ int main(int argc, char const **argv)
         #ifdef SAVEALL 
         sprintf(filename,"../OutputData/RlxMthd_v1.0_%d.dat",i);
         savetemperatures(filename,Ta,Nx,Ny);
+        ++i;
         #endif
     }
     end = clock();
     sum = (end -start) / (double) CLOCKS_PER_SEC;
     #else
     /* The system evolves until it reaches a given number of generations */
+    printf("The system evolves until it reaches a given number of generations\n");
     start = clock();
     for (int i = 1 ; i <= GENERATIONS; i++) {
         nextstate(B,Ta,Tb,Nx,Ny);
         double * temp = Ta;
         Ta = Tb;
         Tb = temp;
+
         #ifdef SAVEALL 
         sprintf(filename,"../OutputData/RlxMthd_v1.0_%d.dat",i);
         savetemperatures(filename,Ta,Nx,Ny);

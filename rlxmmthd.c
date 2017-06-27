@@ -93,7 +93,7 @@ int test(int * B, double * Ta, double * Tb, int nx, int ny){
 	int i = 0;
 	double result = 0;
 	for (i = 0; i < nx * ny; ++i) result += (B[i] == 0 || B[i] == 2) ? 0 : pow(Tb[i] - Ta[i],2);
-	printf("Test Result delta: %.10f\n",result);
+	// printf("Test Result delta: %.10f\n",result);
 	//result = (1 / (nx*ny)) * sqrt(result);
 	result =  sqrt(result);
 	//printf("Test Result: %.10f\n",result);
