@@ -2,12 +2,12 @@
 TARGET_1 = boolmatrix
 TARGET_2 = rlxmmthd
 EXT = .c
-COMPILER = g++
+COMPILER = pgc++
 
 # CFLAGS
 # -lm Math library
 # -O3 Compiler optimization
-CFLAGS = -lm -O3 
+CFLAGS = -lm -O3
 
 # BOOL MATRIX FLAGS
 # -D SAVELAST=1 Save the boolean matrix in Maps directory as table format
@@ -19,7 +19,7 @@ CFLAGS = -lm -O3
 # -D ITERATIONS=<int> Cellular automata number of generations
 # -D CONTOURS=1..3 Read a number of contour files
 # -D TIME to take time 
-BFLAGS = -D ITERATIONS=1000 -D CONTOURS=3 -D SAVELAST=3 -D SAVEINIT=3 -D TIME
+BFLAGS = -D ITERATIONS=300 -D CONTOURS=3 -D SAVELAST=3 -D SAVEINIT=3 -D TIME
 
 # RELAXATION METHOD FLAGS
 # -D SAVEINIT Save the temperature matrix initial state
@@ -55,6 +55,7 @@ plotboolcontour:
 runrelaxation: runbool compilerelaxation
 	@./$(TARGET_2)
 
+
 compilerelaxation:
 	@$(COMPILER) $(TARGET_2)$(EXT) -o $(TARGET_2) $(CFLAGS) $(RFLAGS)
 
@@ -73,4 +74,4 @@ createrelaxationimages:
 # Remove time_bool and time_relaxation
 # Remove generation files
 clean:
-	@rm -f $(TARGET_1) $(TARGET_2) ../OutputData/boolmap*.dat time*.txt ../OutputData/RlxMthd_v1.0_*.dat ../OutputData/*.png
+	@rm -f $(TARGET_1) $(TARGET_2) ../OutputData/boolmap*.dat ../OutputData/RlxMthd_v1.0_*.dat ../OutputData/*.png
